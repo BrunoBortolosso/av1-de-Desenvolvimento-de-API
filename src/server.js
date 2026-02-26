@@ -6,57 +6,39 @@ const PORT = 3000;
 app.use(express.json());
 
 // Banco de dados simulado em memória
-let usuarios = [
-  { id: 1, nome: 'Bruno Bortolosso', email: 'bruno@email.com' },
-  { id: 2, nome: 'João Silva', email: 'joao@email.com' },
+const tarefas = [
+  { id: 1, titulo: 'Estudar Node', concluida: false },
+  { id: 2, titulo: 'Fazer telas no Figma', concluida: true },
 ];
 
 // ==================== ROTAS ====================
 
-// GET /usuarios - Retorna todos os usuários
-app.get('/usuarios', (req, res) => {
-  res.status(200).json({
-    sucesso: true,
-    dados: usuarios,
-  });
+// GET /tarefas - Retorna todas as tarefas
+app.get('/tarefas', (req, res) => {
+  res.status(200).json(tarefas);
 });
 
-// GET /usuarios/:id - Retorna um usuário pelo ID
-app.get('/usuarios/:id', (req, res) => {
-  const id = parseInt(req.params.id);
-  const usuario = usuarios.find((u) => u.id === id);
+// POST /tarefas - Cria uma nova tarefa
+app.post('/tarefas', (req, res) => {
+  const { titulo } = req.body;
 
-  if (!usuario) {
-    return res.status(404).json({ sucesso: false, mensagem: 'Usuário não encontrado' });
+  if (!titulo || titulo.trim() === '') {
+    return res.status(400).json({ erro: 'Título é obrigatório.' });
   }
 
-  res.status(200).json({ sucesso: true, dados: usuario });
-});
-
-// POST /usuarios - Cria um novo usuário
-app.post('/usuarios', (req, res) => {
-  const { nome, email } = req.body;
-
-  if (!nome || !email) {
-    return res.status(400).json({ sucesso: false, mensagem: 'Nome e email são obrigatórios' });
-  }
-
-  const novoUsuario = {
-    id: usuarios.length + 1,
-    nome,
-    email,
+  const novaTarefa = {
+    id: tarefas.length + 1,
+    titulo,
+    concluida: false,
   };
 
-  usuarios.push(novoUsuario);
+  tarefas.push(novaTarefa);
 
-  res.status(201).json({
-    sucesso: true,
-    mensagem: 'Usuário criado com sucesso',
-    dados: novoUsuario,
-  });
+  res.status(201).json(novaTarefa);
 });
 
 // ==================== SERVIDOR ====================
 app.listen(PORT, () => {
   console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
+
